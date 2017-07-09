@@ -21,11 +21,20 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 
@@ -35,6 +44,25 @@ public class LoginActivityId extends AppCompatActivity implements LoaderCallback
     // UI references.
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
+
+
+
+    JSONObject newJSONObject = null;
+    String firstNameToAdd = "John";
+    String lastNameToAdd =  "NewMan";
+    String passwordToAdd =  "pass123";
+    String dobToAdd =       "2001-01-01";
+    String picURLToAdd =    "abyssWalker.jpg";
+
+//    String jsonToAdd = "{\"first_name\":" + firstNameToAdd
+//            + ",\"last_name\"" + lastNameToAdd
+//            + ",\"password\"" + passwordToAdd
+//            + ",\"dobToAdd\"" + dobToAdd
+//            + ",\"pictureURL\"" + picURLToAdd
+//            +"}";
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,11 +142,17 @@ public class LoginActivityId extends AppCompatActivity implements LoaderCallback
 
         @Override
         protected Boolean doInBackground(Void... params) {
+
             try {
+                postUserToDB();
+
+
                 String url = "http://192.168.0.18:8000/idusers/";
                 JSONObject hope = readJsonFromUrl(url);
                 jsonData = hope;
                 System.out.print(hope.getJSONArray("results").toString());
+
+
             } catch (JSONException e) {
                 e.printStackTrace();
 
@@ -207,6 +241,7 @@ public class LoginActivityId extends AppCompatActivity implements LoaderCallback
         private JSONObject readJsonFromUrl(String url) throws JSONException, IOException {
             JSONObject jsonData = null;
 
+
             try {
                 URL urlConnect = new URL(url);
                 HttpURLConnection urlConnection = (HttpURLConnection) urlConnect.openConnection(); // .openStream() returns openConnection().getInputStream()
@@ -229,6 +264,8 @@ public class LoginActivityId extends AppCompatActivity implements LoaderCallback
             }
             return jsonData;
         }
+
+
         private String readBuffer(BufferedReader bufferedReader) throws IOException {
             StringBuilder stringBuilder = new StringBuilder();
             int charFromBuffer;
@@ -236,6 +273,90 @@ public class LoginActivityId extends AppCompatActivity implements LoaderCallback
                 stringBuilder.append((char) charFromBuffer);
             }
             return stringBuilder.toString();
+        }
+
+
+        private void postUserToDB(){
+            String url = "http://192.168.0.18:8000/idusers/";
+
+            try {
+                Log.d("AAAAAAAAAAAAAAAAAAAAAA", "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+                newJSONObject = new JSONObject();
+
+                newJSONObject.put("first_name", firstNameToAdd);
+                newJSONObject.put("last_name", lastNameToAdd);
+                newJSONObject.put("password", passwordToAdd);
+                newJSONObject.put("date_of_birth", dobToAdd);
+                newJSONObject.put("pictureURL", picURLToAdd);
+
+                Log.d("AAAAAAAAAAAAAAAAAAAAAA", newJSONObject.toString());
+
+                URL urlConnect = new URL(url);
+                HttpURLConnection urlConnection = (HttpURLConnection) urlConnect.openConnection();
+
+                urlConnection.setRequestProperty("Authorization", "Basic cGE6cGF0Y2hlc21jaGFsZQ==");
+
+                urlConnection.setRequestMethod("POST");
+                urlConnection.setRequestProperty("Content-Type", "application/json");
+
+                urlConnection.setChunkedStreamingMode(0);
+                urlConnection.setDoOutput(true);
+
+                int status = urlConnection.getResponseCode();
+                Log.d("BBBBBBBBBBBBBBBBBB1", String.valueOf(status));
+
+
+                String string = "{\"first_name\":\"John\",\"last_name\":\"NewMan\",\"password\":\"pass123\",\"date_of_birth\":\"2001-01-01\",\"pictureURL\":\"abyssWalker.jpg\"}";
+
+//                    OutputStream out = new BufferedOutputStream(urlConnection.getOutputStream());
+//                    out.write(string.getBytes());
+//                    out.close();
+//                    OutputStream os = urlConnection.getOutputStream();
+//                    os.write(string.getBytes());
+//                    os.flush();
+
+
+                OutputStream os = urlConnection.getOutputStream();
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+                writer.write(newJSONObject.toString()); // should be fine if my getQuery is encoded right yes?
+                writer.flush();
+                writer.close();
+                os.close();
+                urlConnection.connect();
+
+
+//                status = urlConnection.getResponseCode();
+//                Log.d("BBBBBBBBBBBBBBBBBB3", String.valueOf(status));
+//                PrinterClass.show(status);  //status
+//                if (status != 200)
+//                    throw (new RESTfulWebServiceException("Invalid HTTP response status "
+//                            + "code " + status + " from web service server."));
+
+
+
+//                urlConnection.setDoOutput(true);
+//                urlConnection.setRequestProperty("Content-Type", "application/json");
+//                urlConnection.setRequestProperty("Accept", "application/json");
+//                urlConnection.setRequestMethod("POST");
+//                urlConnection.connect();
+//
+//                DataOutputStream streamWriter = new DataOutputStream(urlConnection.getOutputStream());
+//                streamWriter.writeBytes(newJSONObject.toString());
+//                streamWriter.flush();
+//                streamWriter.close();
+//                Log.d("EEEEEEEEEEEEEEEEEEEEEEE", "EEEEEEEEEEEEEEEEE1");
+
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+                Log.d("EEEEEEEEEEEEEEEEEEEEEEE", "EEEEEEEEEEEEEEEEE1");
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+                Log.d("EEEEEEEEEEEEEEEEEEEEEEE", "EEEEEEEEEEEEEEEEE2");
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.d("EEEEEEEEEEEEEEEEEEEEEEE", "EEEEEEEEEEEEEEEEE3");
+            }
         }
 
     }
