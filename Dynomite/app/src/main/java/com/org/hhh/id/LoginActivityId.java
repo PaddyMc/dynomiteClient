@@ -49,25 +49,6 @@ public class LoginActivityId extends AppCompatActivity implements LoaderCallback
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
 
-
-
-    JSONObject newJSONObject = null;
-    String firstNameToAdd = "Hi";
-    String lastNameToAdd =  "Cael";
-    String passwordToAdd =  "pass123";
-    String dobToAdd =       "2001-01-01";
-    String picURLToAdd =    "inchbigger.jpg";
-
-//    String jsonToAdd = "{\"first_name\":" + firstNameToAdd
-//            + ",\"last_name\"" + lastNameToAdd
-//            + ",\"password\"" + passwordToAdd
-//            + ",\"dobToAdd\"" + dobToAdd
-//            + ",\"pictureURL\"" + picURLToAdd
-//            +"}";
-
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,10 +68,19 @@ public class LoginActivityId extends AppCompatActivity implements LoaderCallback
         });
 
         Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
+        Button mRegisterButton = (Button) findViewById(R.id.register);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 attemptLogin();
+            }
+        });
+        mRegisterButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), RegisterActivity.class);
+                startActivity(intent);
+
             }
         });
     }
@@ -148,7 +138,6 @@ public class LoginActivityId extends AppCompatActivity implements LoaderCallback
         protected Boolean doInBackground(Void... params) {
 
             try {
-                postUserToDB();
 
 
                 String url = "http://192.168.0.18:8000/idusers/";
@@ -279,57 +268,6 @@ public class LoginActivityId extends AppCompatActivity implements LoaderCallback
             return stringBuilder.toString();
         }
 
-
-        private void postUserToDB(){
-            String url = "http://192.168.0.18:8000/hope/";
-
-            try {
-                Log.d("AAAAAAAAAAAAAAAAAAAAAA", "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-                newJSONObject = new JSONObject();
-
-                newJSONObject.put("first_name", firstNameToAdd);
-                newJSONObject.put("last_name", lastNameToAdd);
-                newJSONObject.put("password", passwordToAdd);
-                newJSONObject.put("date_of_birth", dobToAdd);
-                newJSONObject.put("pictureURL", picURLToAdd);
-
-                Log.d("AAAAAAAAAAAAAAAAAAAAAA", newJSONObject.toString());
-
-                URL urlConnect = new URL(url);
-                HttpURLConnection urlConnection = (HttpURLConnection) urlConnect.openConnection();
-
-                urlConnection.setRequestProperty("Authorization", "Basic cGE6cGF0Y2hlc21jaGFsZQ==");
-
-                urlConnection.setRequestMethod("POST");
-//                urlConnection.setDoOutput(true);
-
-                byte[] out =  newJSONObject.toString().getBytes("UTF-8");
-               // int length = out.length;
-
-                //urlConnection.setFixedLengthStreamingMode(length);
-                urlConnection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-                urlConnection.connect();
-                OutputStream os = urlConnection.getOutputStream();
-                os.write(out);
-
-
-                Log.d("ZZZZZZZZZZZZZZZZ", newJSONObject.toString());
-
-                int status = urlConnection.getResponseCode();
-                Log.d("BBBBBBBBBBBBBBBBBB0", String.valueOf(status));
-
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-                Log.d("EEEEEEEEEEEEEEEEEEEEEEE", "EEEEEEEEEEEEEEEEE1");
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-                Log.d("EEEEEEEEEEEEEEEEEEEEEEE", "EEEEEEEEEEEEEEEEE2");
-            } catch (IOException e) {
-                e.printStackTrace();
-                Log.d("EEEEEEEEEEEEEEEEEEEEEEE", "EEEEEEEEEEEEEEEEE3");
-            }
-        }
 
     }
 }
