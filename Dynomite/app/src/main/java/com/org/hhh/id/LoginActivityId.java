@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Base64;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -36,6 +37,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 
 public class LoginActivityId extends AppCompatActivity implements LoaderCallbacks<Cursor> {
@@ -48,11 +52,11 @@ public class LoginActivityId extends AppCompatActivity implements LoaderCallback
 
 
     JSONObject newJSONObject = null;
-    String firstNameToAdd = "John";
-    String lastNameToAdd =  "NewMan";
+    String firstNameToAdd = "Hi";
+    String lastNameToAdd =  "Cael";
     String passwordToAdd =  "pass123";
     String dobToAdd =       "2001-01-01";
-    String picURLToAdd =    "abyssWalker.jpg";
+    String picURLToAdd =    "inchbigger.jpg";
 
 //    String jsonToAdd = "{\"first_name\":" + firstNameToAdd
 //            + ",\"last_name\"" + lastNameToAdd
@@ -277,7 +281,7 @@ public class LoginActivityId extends AppCompatActivity implements LoaderCallback
 
 
         private void postUserToDB(){
-            String url = "http://192.168.0.18:8000/idusers/";
+            String url = "http://192.168.0.18:8000/hope/";
 
             try {
                 Log.d("AAAAAAAAAAAAAAAAAAAAAA", "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
@@ -297,54 +301,22 @@ public class LoginActivityId extends AppCompatActivity implements LoaderCallback
                 urlConnection.setRequestProperty("Authorization", "Basic cGE6cGF0Y2hlc21jaGFsZQ==");
 
                 urlConnection.setRequestMethod("POST");
-                urlConnection.setRequestProperty("Content-Type", "application/json");
+//                urlConnection.setDoOutput(true);
 
-                urlConnection.setChunkedStreamingMode(0);
-                urlConnection.setDoOutput(true);
+                byte[] out =  newJSONObject.toString().getBytes("UTF-8");
+               // int length = out.length;
+
+                //urlConnection.setFixedLengthStreamingMode(length);
+                urlConnection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+                urlConnection.connect();
+                OutputStream os = urlConnection.getOutputStream();
+                os.write(out);
+
+
+                Log.d("ZZZZZZZZZZZZZZZZ", newJSONObject.toString());
 
                 int status = urlConnection.getResponseCode();
-                Log.d("BBBBBBBBBBBBBBBBBB1", String.valueOf(status));
-
-
-                String string = "{\"first_name\":\"John\",\"last_name\":\"NewMan\",\"password\":\"pass123\",\"date_of_birth\":\"2001-01-01\",\"pictureURL\":\"abyssWalker.jpg\"}";
-
-//                    OutputStream out = new BufferedOutputStream(urlConnection.getOutputStream());
-//                    out.write(string.getBytes());
-//                    out.close();
-//                    OutputStream os = urlConnection.getOutputStream();
-//                    os.write(string.getBytes());
-//                    os.flush();
-
-
-                OutputStream os = urlConnection.getOutputStream();
-                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-                writer.write(newJSONObject.toString()); // should be fine if my getQuery is encoded right yes?
-                writer.flush();
-                writer.close();
-                os.close();
-                urlConnection.connect();
-
-
-//                status = urlConnection.getResponseCode();
-//                Log.d("BBBBBBBBBBBBBBBBBB3", String.valueOf(status));
-//                PrinterClass.show(status);  //status
-//                if (status != 200)
-//                    throw (new RESTfulWebServiceException("Invalid HTTP response status "
-//                            + "code " + status + " from web service server."));
-
-
-
-//                urlConnection.setDoOutput(true);
-//                urlConnection.setRequestProperty("Content-Type", "application/json");
-//                urlConnection.setRequestProperty("Accept", "application/json");
-//                urlConnection.setRequestMethod("POST");
-//                urlConnection.connect();
-//
-//                DataOutputStream streamWriter = new DataOutputStream(urlConnection.getOutputStream());
-//                streamWriter.writeBytes(newJSONObject.toString());
-//                streamWriter.flush();
-//                streamWriter.close();
-//                Log.d("EEEEEEEEEEEEEEEEEEEEEEE", "EEEEEEEEEEEEEEEEE1");
+                Log.d("BBBBBBBBBBBBBBBBBB0", String.valueOf(status));
 
 
             } catch (JSONException e) {
