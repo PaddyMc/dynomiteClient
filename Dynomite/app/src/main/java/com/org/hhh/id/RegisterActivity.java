@@ -137,7 +137,7 @@ public class RegisterActivity extends AppCompatActivity {
         //mEmailView.setError(null);
         //mPasswordView.setError(null);
 
-        String email = "a";//mEmailView.getText().toString();
+        String email = "a";//   mEmailView.getText().toString();
         String password = "a";//mPasswordView.getText().toString();
 
         mRegisterTask = new UserRegisterTask(email, password);
@@ -161,7 +161,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            String url = "http://192.168.0.18:8000/newidusers/";
+            String url = "http://192.168.0.193:8000/newidusers/";
             //postUserToDB(url);
             postPicUserToDB(url);
             return true;
@@ -257,7 +257,7 @@ public class RegisterActivity extends AppCompatActivity {
             try {
                 fileInputStream = new FileInputStream(file);
 
-                URL picUrl = new URL("http://192.168.0.18:8000/upload/ghfhgf.jpg");
+                URL picUrl = new URL("http://192.168.0.193:8000/upload/ghfhgf.jpg");
                 connection = (HttpURLConnection) picUrl.openConnection();
 
                 connection.setDoInput(true);

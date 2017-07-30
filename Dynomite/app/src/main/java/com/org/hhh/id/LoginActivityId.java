@@ -140,7 +140,7 @@ public class LoginActivityId extends AppCompatActivity implements LoaderCallback
             try {
 
 
-                String url = "http://192.168.0.18:8000/idusers/";
+                String url = "http://192.168.0.193:8000/idusers/";
                 JSONObject hope = readJsonFromUrl(url);
                 jsonData = hope;
                 System.out.print(hope.getJSONArray("results").toString());
