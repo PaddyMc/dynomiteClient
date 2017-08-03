@@ -38,6 +38,9 @@ public class UserProfileActivity extends AppCompatActivity {
         String name = intent.getStringExtra("name");
         String dob = intent.getStringExtra("dob");
         String pictureURL = intent.getStringExtra("pictureURL");
+        String httpLocation = "http://192.168.0.193:8000/static/idphotos/";
+
+        String fullPictureURL = httpLocation + pictureURL;
 
         EditText editText = (EditText)findViewById(R.id.editText);
         editText.setText(name, TextView.BufferType.EDITABLE);
@@ -46,7 +49,7 @@ public class UserProfileActivity extends AppCompatActivity {
         editText2.setText(dob, TextView.BufferType.EDITABLE);
 
         imageView = (ImageView) findViewById(R.id.imageView);
-        UserPictureTask userPictureTask = new UserPictureTask(pictureURL);
+        UserPictureTask userPictureTask = new UserPictureTask(fullPictureURL);
         userPictureTask.execute((Void) null);
 
         Log.d(name, dob);

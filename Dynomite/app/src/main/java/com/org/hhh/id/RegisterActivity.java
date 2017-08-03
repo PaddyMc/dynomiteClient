@@ -15,6 +15,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 
 import org.json.JSONException;
@@ -48,6 +49,11 @@ public class RegisterActivity extends AppCompatActivity {
     String filename = "";
     Bitmap picToUpload = null;
 
+    private EditText mFirstNameView;
+    private EditText mLastNameView;
+    private EditText mEmailView;
+    private EditText mPasswordView;
+    private EditText mDateOfBirthView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +61,6 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -75,10 +80,6 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
 
-
-
-        // Here, we are making a folder named picFolder to store
-        // pics taken by the camera using this application.
         final String dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/picFolder/";
         File newdir = new File(dir);
         newdir.mkdirs();
@@ -133,36 +134,50 @@ public class RegisterActivity extends AppCompatActivity {
         if (mRegisterTask != null) {
             return;
         }
+        mFirstNameView = (EditText) findViewById(R.id.firstName);
+        mLastNameView = (EditText) findViewById(R.id.lastName);
+        mEmailView = (EditText) findViewById(R.id.email);
+        mDateOfBirthView = (EditText) findViewById(R.id.dateOfBirth);
+        mPasswordView = (EditText) findViewById(R.id.password);
 
         //mEmailView.setError(null);
         //mPasswordView.setError(null);
+        String firstName = mFirstNameView.getText().toString();
+        String lastName = mLastNameView.getText().toString();
+        String email = mEmailView.getText().toString();
+        String dateOfBirth = mDateOfBirthView.getText().toString();
+        String password = mPasswordView.getText().toString();
 
-        String email = "a";//   mEmailView.getText().toString();
-        String password = "a";//mPasswordView.getText().toString();
-
-        mRegisterTask = new UserRegisterTask(email, password);
+        mRegisterTask = new UserRegisterTask(firstName, lastName, email, dateOfBirth, password);
         mRegisterTask.execute((Void) null);
 
     }
 
 
     public class UserRegisterTask extends AsyncTask<Void, Void, Boolean> {
-
+        private final String mFirstName;
+        private final String mLastName;
         private final String mEmail;
+        private final String mDateOfBirth;
         private final String mPassword;
+        private final String mPictureURL;
         private JSONObject jsonData;
         private int userID;
 
-        UserRegisterTask(String email, String password) {
+        UserRegisterTask(String firstName, String lastName, String email, String dateOfBirth, String password) {
+            mFirstName = firstName;
+            mLastName = lastName;
             mEmail = email;
             mPassword = password;
+            mDateOfBirth = dateOfBirth;
+            mPictureURL = mFirstName+mLastName+".jpg";
         }
 
 
         @Override
         protected Boolean doInBackground(Void... params) {
             String url = "http://192.168.0.193:8000/newidusers/";
-            //postUserToDB(url);
+            postUserToDB(url);
             postPicUserToDB(url);
             return true;
         }
@@ -174,6 +189,8 @@ public class RegisterActivity extends AppCompatActivity {
 
             if (success) {
                 // Write success story
+                //Intent intent = new Intent(getApplicationContext(), LoginActivityId.class);
+                //startActivity(intent);
             }
         }
 
@@ -188,13 +205,14 @@ public class RegisterActivity extends AppCompatActivity {
         private void postUserToDB(String url){
 
             try {
-                JSONObject newJSONObject = new JSONObject();;
+                JSONObject newJSONObject = new JSONObject();
 
-                newJSONObject.put("first_name", "s");
-                newJSONObject.put("last_name", "s");
-                newJSONObject.put("password", "S");
-                newJSONObject.put("date_of_birth", "11-11-1111");
-                newJSONObject.put("pictureURL", "s");
+                newJSONObject.put("first_name", mFirstName);
+                newJSONObject.put("last_name", mLastName);
+                newJSONObject.put("email", mEmail);
+                newJSONObject.put("password", mPassword);
+                newJSONObject.put("date_of_birth", mDateOfBirth);
+                newJSONObject.put("pictureURL", mPictureURL);
 
                 Log.d("AAAAAAAAAAAAAAAAAAAAAA", newJSONObject.toString());
 
@@ -215,9 +233,6 @@ public class RegisterActivity extends AppCompatActivity {
                 OutputStream os = urlConnection.getOutputStream();
                 os.write(out);
 
-
-                Log.d("ZZZZZZZZZZZZZZZZ", newJSONObject.toString());
-
                 int status = urlConnection.getResponseCode();
                 Log.d("BBBBBBBBBBBBBBBBBB0", String.valueOf(status));
 
@@ -237,7 +252,7 @@ public class RegisterActivity extends AppCompatActivity {
         private void postPicUserToDB(String url) {
             HttpURLConnection connection = null;
             DataOutputStream outputStream = null;
-            InputStream inputStream = null;
+            //InputStream inputStream = null;
 
             String twoHyphens = "--";
             String boundary =  "*****"+Long.toString(System.currentTimeMillis())+"*****";
@@ -256,8 +271,9 @@ public class RegisterActivity extends AppCompatActivity {
             FileInputStream fileInputStream = null;
             try {
                 fileInputStream = new FileInputStream(file);
+                String pictureURL = "http://192.168.0.193:8000/upload/"+mPictureURL;
 
-                URL picUrl = new URL("http://192.168.0.193:8000/upload/ghfhgf.jpg");
+                URL picUrl = new URL(pictureURL);
                 connection = (HttpURLConnection) picUrl.openConnection();
 
                 connection.setDoInput(true);
@@ -292,10 +308,12 @@ public class RegisterActivity extends AppCompatActivity {
                 outputStream.writeBytes(lineEnd);
                 outputStream.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
 
-                inputStream = connection.getInputStream();
+                //inputStream = connection.getInputStream();
 
                 int status = connection.getResponseCode();
-                if (status == HttpURLConnection.HTTP_OK) {
+                Log.d("imagga", String.valueOf(status));
+
+                /*if (status == HttpURLConnection.HTTP_OK) {
                     BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                     String inputLine;
                     StringBuffer response = new StringBuffer();
@@ -313,7 +331,7 @@ public class RegisterActivity extends AppCompatActivity {
                     Log.i("imagga", response.toString());
                 } else {
                     throw new Exception("Non ok response returned");
-                }
+                }*/
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (ProtocolException e) {
