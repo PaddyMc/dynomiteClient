@@ -176,7 +176,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            String url = "http://192.168.0.193:8000/newidusers/";
+            String url = "http://192.168.0.17:8000/newidusers/";
             postUserToDB(url);
             postPicUserToDB(url);
             return true;
@@ -271,7 +271,7 @@ public class RegisterActivity extends AppCompatActivity {
             FileInputStream fileInputStream = null;
             try {
                 fileInputStream = new FileInputStream(file);
-                String pictureURL = "http://192.168.0.193:8000/upload/"+mPictureURL;
+                String pictureURL = "http://192.168.0.17:8000/upload/"+mPictureURL;
 
                 URL picUrl = new URL(pictureURL);
                 connection = (HttpURLConnection) picUrl.openConnection();

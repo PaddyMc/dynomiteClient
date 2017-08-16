@@ -38,7 +38,7 @@ public class UserProfileActivity extends AppCompatActivity {
         String name = intent.getStringExtra("name");
         String dob = intent.getStringExtra("dob");
         String pictureURL = intent.getStringExtra("pictureURL");
-        String httpLocation = "http://192.168.0.193:8000/static/idphotos/";
+        String httpLocation = "http://192.168.0.17:8000/static/idphotos/";
 
         String fullPictureURL = httpLocation + pictureURL;
 

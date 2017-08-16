@@ -140,7 +140,7 @@ public class LoginActivityId extends AppCompatActivity implements LoaderCallback
             try {
 
 
-                String url = "http://192.168.0.193:8000/idusers/";
+                String url = "http://192.168.0.17:8000/login/";
                 JSONObject hope = readJsonFromUrl(url);
                 jsonData = hope;
                 System.out.print(hope.getJSONArray("results").toString());
@@ -161,7 +161,7 @@ public class LoginActivityId extends AppCompatActivity implements LoaderCallback
             try {
                 int numOfUsers = jsonData.getInt("count");
                 for (int i = 0; i < numOfUsers && !userAuth; i++) {
-                    String email = jsonData.getJSONArray("results").optJSONObject(i).getString("first_name");
+                    String email = jsonData.getJSONArray("results").optJSONObject(i).getString("email");
                     String password = jsonData.getJSONArray("results").optJSONObject(i).getString("password");
                     if (email.equals(mEmail) && password.equals(mPassword)) {
                         userID = jsonData.getJSONArray("results").optJSONObject(i).getInt("user_id");
@@ -234,9 +234,9 @@ public class LoginActivityId extends AppCompatActivity implements LoaderCallback
         private JSONObject readJsonFromUrl(String url) throws JSONException, IOException {
             JSONObject jsonData = null;
 
-
             try {
-                URL urlConnect = new URL(url);
+                String loginUrl = url + mEmail + "/";
+                URL urlConnect = new URL(loginUrl);
                 HttpURLConnection urlConnection = (HttpURLConnection) urlConnect.openConnection(); // .openStream() returns openConnection().getInputStream()
                 urlConnection.setRequestProperty("Authorization", "Basic cGE6cGF0Y2hlc21jaGFsZQ==");
                 try{
